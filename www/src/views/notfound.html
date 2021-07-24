@@ -1,0 +1,28 @@
+<template>
+  <div class="NotFound">
+    <h1>404</h1>
+  </div>
+</template>
+
+<script>
+  export default class NotFound {
+    constructor() {}
+
+    data() {
+      return {
+        name: "NotFound",
+        components: {},
+        template: this.template(),
+        style: this.style(),
+        render: this.render.bind(this),
+      };
+    }
+    
+    render() {}
+  }
+</script>
+
+<style>
+  .NotFound {
+  }
+</style>

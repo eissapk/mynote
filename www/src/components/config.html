@@ -1,0 +1,126 @@
+<template>
+  <div class="Config">
+    <section class="Config__inner">
+      <p class="Config__inner__text">
+        <span>Backup</span>
+        or
+        <span>Update</span>
+        your data in case you cleared browser cache or formated your device!
+      </p>
+
+      <button type="button" class="Config__inner--backupBtn">backup</button>
+      <button type="button" class="Config__inner--updateBtn">update</button>
+    </section>
+  </div>
+</template>
+
+<script>
+  import { $ } from "olum";
+  import api from "../services/api.js";
+
+  export default class Config {
+    constructor() {}
+    margin = 15;
+    fileType = "application/json";
+    data() {
+      return {
+        name: "Config",
+        components: {},
+        template: this.template(),
+        style: this.style(),
+        render: this.render.bind(this),
+      };
+    }
+
+    render() {
+      this.file = document.createElement("input");
+      this.file.type = "file";
+      this.file.accept = this.fileType;
+      const backupBtn = $(".Config__inner--backupBtn");
+      const updateBtn = $(".Config__inner--updateBtn");
+
+      backupBtn.on("click", () => this.backup());
+      updateBtn.on("click", () => this.file.click());
+      this.file.on("change", e => this.update(e));
+    }
+
+    backup() {
+      const data = api.get();
+      if (data.length) {
+        const a = document.createElement("a");
+        const _file = new Blob([JSON.stringify(data)], { type: this.fileType });
+        a.href = URL.createObjectURL(_file);
+        a.download = `My Note ${this.currentTime()}.json`;
+        a.click();
+      } else {
+        alert("No Data to Backup!");
+      }
+    }
+
+    update(e) {
+      const reader = new FileReader();
+      reader.readAsText(e.target.files[0]);
+      reader.onload = e => api.updateStorage(e.target.result);
+    }
+
+    currentTime() {
+      return new Date().toISOString().replace(/\..*/g, "").replace(/:/g, "-").replace(/T/g, " ");
+    }
+  }
+</script>
+
+<style lang="scss">
+  .Config {
+    position: relative;
+    background: transparent;
+    margin: 0 auto;
+    padding: 10px;
+    border-radius: $radius;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    width: calc(100% - 20px);
+    height: calc(100vh - 159px);
+
+    &__inner {
+      text-align: center;
+      background: $white;
+      padding: 20px;
+      border-radius: $radius;
+      &__text {
+        color: $subTextColor;
+        margin-bottom: 20px;
+        line-height: 25px;
+        span {
+          color: $blue;
+          font-weight: bold;
+        }
+      }
+
+      button {
+        color: $white;
+        width: 100px;
+        height: 40px;
+        line-height: 40px;
+        border: 0;
+        border-radius: $radius;
+        margin: 5px;
+        text-align: center;
+        font-weight: 600;
+        text-transform: capitalize;
+        cursor: pointer;
+      }
+      &--backupBtn {
+        background-color: $green;
+      }
+
+      &--updateBtn {
+        background-color: $red;
+      }
+    }
+  }
+</style>
